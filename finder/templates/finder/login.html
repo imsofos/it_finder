@@ -1,0 +1,47 @@
+{% extends './base.html' %}
+{% load static %}
+{% block title %} Login {% endblock %}
+{% block style %}
+    <link rel="stylesheet" href="{% static 'finder/css/form.css' %}">
+    <style>
+        .box{
+            max-height: 100vw;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+
+    <div class="box" action="javascript:void()">
+        <h2>ورود به خانه گرین</h2>
+        <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <label for="username">نام کاربری</label>
+        <input id="username" id="username" type="text" name="username" placeholder="نام کاربری">
+        <label for="password">کلمه عبور</label>
+        <input id="password" id="password" type="password" name="password" placeholder="•••••••">
+        <input class="action-button" type="submit" name="submit" value="ورود">
+    </div>
+
+
+{% endblock%}    
+{% block script %}
+    <script>
+        $('.action-button').click(function () {
+            var username = $("#username").val();
+            var password = $("#password").val();
+            var csrf_token = $("#csrf_token").val();
+            data = {
+                'username': username,
+                'password': password,
+                'csrfmiddlewaretoken': csrf_token  
+            }
+            $.ajax({
+                type: "POST",
+                url: "{% url 'login' %}",
+                data: data,
+                success: function(data){
+                    window.location.replace("{% url 'index' %}")
+                },
+            });
+        })
+    </script>
+{% endblock %}

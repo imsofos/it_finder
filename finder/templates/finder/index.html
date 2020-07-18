@@ -1,0 +1,117 @@
+{% extends './base.html' %}
+{% load static %}
+{% block title %} Finder {% endblock %}
+{% block style %} <link rel="stylesheet" href="{% static 'finder/css/index.css' %}"> {% endblock %}
+{% block content %}
+    <div class="container">
+        <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <input type="text"  id="searchInput" placeholder="متن مورد نظر خود را وارد کنید">
+        <ul id="searchResult">
+        </ul>
+        <div id="showProduct">
+            <div id="imageSection">
+            </div>
+            <div id="detailSection">
+            </div>
+            <a href="" id="editProductBtn">
+                <button>
+                    ویرایش
+                </button>
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            $('#searchInput').keyup(function () {
+                var searchInput = $("#searchInput").val();
+                var csrf_token = $("#csrf_token").val();
+                data = {
+                    'searchInput': searchInput,
+                    'csrfmiddlewaretoken': csrf_token  
+                }
+                if (searchInput.length == 0){
+                    $('#searchResult').empty()
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'search' %}",
+                    data: data,
+                    success: function(Products){
+                        $('#searchResult').empty()
+                        json_to_li(Products)
+                        $('#searchResult').show()
+                    },
+                    error: function (XHR, textStatus, error) {
+                        let listItem = $('<li></li>')
+                        listItem.html('متاسفانه مشکلی پیش امده است')
+                        listItem.attr('onclick', `$('#searchResult').hide()`)
+                        $('#searchResult').append(listItem)
+                        console.log(XHR, textStatus, error)
+                    }
+                });  
+            })
+        
+
+        })
+
+
+        function json_to_li(Products) {
+            if (Products.length <= 0) {
+                let listItem = $('<li></li>')
+                listItem.html('موردی یافت نشد')
+                listItem.attr('onclick', `$('#searchResult').hide()`)
+                $('#searchResult').append(listItem)
+            } else {
+                Products.forEach(product => {
+                    let listItem = $('<li></li>')
+                    listItem.html(`${product.fields.name}`)
+                    listItem.attr('onclick', `loadProduct(${product.pk}); $('#searchResult').hide()`)
+                    if (product.fields.quantity <= 0){
+                        listItem.addClass('unavalible')
+                    }
+                    $('#searchResult').append(listItem)
+                });
+            }
+        }
+
+
+        function loadProduct(pk) {
+            $.ajax({
+                type: "POST",
+                url: `{% url 'getProduct' pk=0 %}`.replace('0', pk),
+                data: data,
+                success: function(Product){
+                    $('#showProduct').show()
+                    make_htmlx(Product)
+                }
+            });
+        }
+
+
+        function make_htmlx(product) {
+            product = product[0]
+            $('a#editProductBtn').attr('href', "{% url 'editProduct' pk=0 %}".replace('0', product.pk))
+            if (product.fields.quantity > 0){
+                $('#showProduct').removeClass('unavalible')
+            }else{
+                $('#showProduct').addClass('unavalible')
+            }
+            img = $(`<img class="image" src="/media/${product.fields.img}/">`)
+            $('#imageSection').empty()
+            $('#imageSection').append(img)
+            detail = $(`
+                <span> نام محصول: <br>${product.fields.name} <span><hr>
+                <span> قیمت فروش محصول: <br>${product.fields.price} تومان<span><hr>
+                <span> قیمت خرید محصول: <br>${product.fields.buy_price} تومان<span><hr>
+                <span> موجودی محصول: <br>${product.fields.quantity} عدد<span><hr>
+                <span> تاریخ ثبت محصول : <br>${product.fields.created_date}</span>
+            `)  
+            $('#detailSection').empty()
+            $('#detailSection').append(detail)
+        }
+
+    </script>
+{% endblock %}

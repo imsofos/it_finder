@@ -1,0 +1,48 @@
+{% extends './base.html' %}
+{% load static %}
+{% block title %} Finder {% endblock %}
+{% block style %} 
+    <link rel="stylesheet" href="{% static 'finder/css/form.css' %}"> 
+    <style>
+        .box{
+            padding:20px;
+            direction: rtl;
+            text-align: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+            border-radius: 5px;
+        }
+        .box * {
+            color:#fff
+        }
+        .box textarea{
+            width: 100%;
+        }
+        .box label{
+            margin: 0;
+        }
+        @media only screen and (min-width: 900px) {
+            .box {
+                width: 900px;
+            }
+            .box input{
+                width: 49%;
+            }
+            .box textarea{
+                width: 98%;
+            }
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <form class="box" action="" method="POST" enctype="multipart/form-data">
+        <h2>ویرایش محصول</h2>
+        <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        {{ form.name }}
+        {{ form.quantity }}
+        {{ form.price }}
+        {{ form.buy_price }}
+        {{ form.img }}
+        <input class="action-button" type="submit" name="submit" value="ویرایش">
+    </form>
+{% endblock %}

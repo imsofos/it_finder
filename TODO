@@ -1,0 +1,26 @@
+//done
+[x] If the product quantity is 0 mark it as unavalible something like a label top corner
+
+// real needs
+[ ] Inline edit product
+[ ] Delete Product ? Soft Delete? What?
+
+//upgrade
+[x] Price can be a range => #make it 2 intField
+[x] created_date => DateTimeField and make it jalali
+
+//future
+[ ] Import products from excel
+[ ] Hash Table For Repeated Images
+[ ] Optimize the images
+[ ] add user (the importer of product)
+[ ] user lifetime line(what created, what update, what deleted, and when)
+
+[ ] Show some chart and information before search(
+        the best seller user, the Worst seller
+        the best product for selling, the worst product to sell(lowest sell rate)
+        the oldest product in database(with quantity > 0)
+        sell rate of this mount
+        total income
+        total expense
+        ...)
